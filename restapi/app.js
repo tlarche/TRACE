@@ -5,9 +5,21 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+//var usersRouter = require('./routes/users');
+var dbRouter = require('./routes/model/db_api');
+var userRouter = require('./routes/model/user_api');
+var tripRouter = require('./routes/model/trip_api');
+var stepRouter = require('./routes/model/step_api');
+var poiRouter = require('./routes/model/poi_api');
 
 var app = express();
+
+// Some logs info...
+const startedDate = new Date();
+console.log("");
+console.log("__dirname =>", __dirname);
+console.log(">> Started at: " + startedDate);
+console.log("");
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -20,7 +32,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/db', dbRouter);
+app.use('/user', userRouter);
+app.use('/trip', tripRouter);
+app.use('/step', stepRouter);
+app.use('/poi', poiRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
