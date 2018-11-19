@@ -33,7 +33,7 @@ const poiSchema = mongoose.Schema({
         unique: true
     },
     description: String,
-    type: String,
+    kind: String,
     link: String,
     dd_coord: Coord_DD
   });
@@ -75,7 +75,7 @@ router.post('/create', function( req, res, next) {
             user_id: req.body.user_id,
             name: req.body.name,
             description: req.body.description,
-            type: req.body.type,
+            kind: req.body.kind,
             link: req.body.link,
             dd_coord:{
                 "longitude": req.body.dd_coord.longitude,
@@ -88,11 +88,6 @@ router.post('/create', function( req, res, next) {
         });
 
         // Create new POI
-        //   console.log(newPoi);
-        //   console.log(newPoi.dd_coord.latitude);
-        //   console.log(newPoi.dd_coord.longitude);
-        //   newPoi.dd_coord.longitude = 0;
-        //   newPoi.dd_coord.latitude = 0;
         newPoi.save(function( error, poi ) {
             if ( err === null ) {
             console.log("CREATE: OK");
@@ -109,39 +104,95 @@ router.post('/create', function( req, res, next) {
 // END ROUTE => CREATE-POI
 });
 
+/* GET=READ */
+router.get('/read-by-id', function (req, res, next) {
+    console.log("ROUTE: poi/read-by-id", req.query);
+    poiModel.findById(req.query.poi_id, function (err, poi) {
+        console.log("error:", err);
+        if (poi !== null) {
+
+            // POI found => return it
+            res.json({
+                poi,
+                result: true
+            });
+
+        } else {
+
+            // POI is not found => return false
+            res.json({
+                poi: null,
+                result: false
+            });
+
+        }
+    });
+    // END ROUTE => READ-POI
+});
+
+/* GET=READ */
+router.get('/read-by-userid', function (req, res, next) {
+    console.log("ROUTE: poi/read-by-user-id", req.query);
+    poiModel.find({
+        user_id: req.query.user_id
+        }, function (err, pois) {
+        console.log("error:", err);
+        if (pois !== null) {
+
+            // 1,n POI found => return it (array)
+            res.json({
+                list: pois,
+                count: pois.length,
+                result: true
+            });
+
+        } else {
+
+            // POI is not found => return false
+            res.json({
+                poi: null,
+                result: false
+            });
+
+        }
+    });
+    // END ROUTE => READ-POI
+});
+
+/* GET=READ */
+router.get('/list-id-by-userid', function (req, res, next) {
+    console.log("ROUTE: poi/read-by-user-id", req.query);
+    // TODO: check if the user_id is a valid objectId
+    poiModel.find(
+        { user_id: req.query.user_id }, 
+        "_id", 
+        function (err, pois) {
+            console.log("error:", err);
+            if (err === null) {
+
+                // 0,n POI found => return it (array)
+                res.json({
+                    list: pois,
+                    count: pois.length,
+                    result: true
+                });
+
+            } else {
+
+                // Error found => return false
+                res.json({
+                    err,
+                    result: false
+                });
+
+            }
+        });
+    // END ROUTE => READ-POI
+});
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
     res.json({message: 'route /'});
 });
-
-// router.get('/account', function(req, res, next) {
-//   userModel.find(function(err, users) {
-//     res.json({users});
-//   });
-// });
-
-// router.post('/account', function(req, res, next) {
-//   var user = new userModel({
-//     poster_path: req.body.poster_path,
-//     overview: req.body.overview,
-//     title: req.body.title,
-//     idUserDB: req.body.idUserDB
-//   });
-//   user.save(function(error, user) {
-//     userModel.find(function(err, users) {
-//       res.json({user});
-//     });
-//   });
-// });
-
-// router.delete('/account/:idUserDB', function(req, res, next) {
-//   userModel.remove({
-//     idUserDB: req.params.idUserDB
-//   }, function(error) {
-//     userModel.find(function(err, users) {
-//       res.json({users});
-//     });
-//   });
-// });
 
 module.exports = router;

@@ -11,6 +11,7 @@ var userRouter = require('./routes/model/user_api');
 var tripRouter = require('./routes/model/trip_api');
 var stepRouter = require('./routes/model/step_api');
 var poiRouter = require('./routes/model/poi_api');
+var wpRouter = require('./routes/model/wp_api');
 
 var app = express();
 
@@ -37,6 +38,7 @@ app.use('/user', userRouter);
 app.use('/trip', tripRouter);
 app.use('/step', stepRouter);
 app.use('/poi', poiRouter);
+app.use('/wp', wpRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

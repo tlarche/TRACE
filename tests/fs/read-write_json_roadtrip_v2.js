@@ -306,7 +306,7 @@ const main = async () => {
                    // updated_date: null,
                    "version": 1 // "updated_date": ""
                 }
-                console.log(newStep);
+                // console.log(newStep);
                 result = Joi.validate(newStep, joi_schema_step);
                 if (result.error !== null) {
                     console.log("Joi error (NEW step) =>", result.error);
@@ -373,12 +373,12 @@ const main = async () => {
 
                     // ==== POI ADD ===========================================================
                     const newPoi = {
-                        user_id: way_points[wp].user_id,
-                        name: way_points[wp].name,
-                        description: way_points[wp].description,
-                        type: way_points[wp].kind,
-                        link: way_points[wp].link,
-                        dd_coord: {
+                        "user_id": user_id,
+                        "name": way_points[wp].name,
+                        "description": way_points[wp].description,
+                        "kind": way_points[wp].kind,
+                        "link": way_points[wp].link,
+                        "dd_coord": {
                             "longitude": way_points[wp].dd_coord.longitude,
                             "latitude": way_points[wp].dd_coord.latitude,
                             "address": {
@@ -386,22 +386,12 @@ const main = async () => {
                                 "country": ""
                             },
                         }
-                        // ATTENTION : Date au format "MM-DD-YYYY" !
-                        //"created_date": createdDate,
-                        // updated_date: null,
-                        // "version": 1 // "updated_date": ""
                     }
-                    // console.log(newPoi);
-                    // result = Joi.validate(newPoi, joi_schema_poi);
-                    // if (result.error !== null) {
-                    //     console.log("Joi error (NEW POI) =>", result.error);
-                    //     return;
-                    // }
 
                     // Create POI instance in db
                     // Invoke REST API route
-                    const url = `${C_HOST_URL}/poi/create`;
-                    const response = await fetch(url, {
+                    let url = `${C_HOST_URL}/poi/create`;
+                    let response = await fetch(url, {
                         json: true,
                         method: 'POST',
                         // this line is important, if this content-type is not set it wont work
@@ -412,34 +402,88 @@ const main = async () => {
                     });
 
                     // Get back poi_id of POI just created
-                    const json = await response.json();
-                    const status = await response.status;
-                    console.log(">>>>>>>>>>>>>>>>", json, status)
+                    let json = await response.json();
+                    let status = await response.status;
+                    // console.log(">>>>>>>>>>>>>>>>", json, status)
 
-                        if ( json.result ) {
-                            poi_id = json.poi._id
-                            console.log(`poi_id (${poi_id}) has been created...`, json);
-                        } else {
-                            console.log(`An error occured on poi creation...`, json);
-                            //return;
-                        } 
+                    poi_id = json.poi._id
+                    if ( json.result ) {
+                        console.log(`poi_id (${poi_id}) has been created...`, json);
+                    } else {
+                        console.log(`An error occured on POI creation...`, json);
+                        //return;
+                    } 
                     // ==== POI ADD ===========================================================
                     
-                    for (const myKey in way_points[wp]) {
-                        console.log(`key: "${myKey}", value: "${way_points[wp][myKey]}", typeof: "${typeof(way_points[wp][myKey])}"`);
+                    // ==== WP ADD ============================================================
+                    const newWP = {
+                        poi_id: poi_id,
+                        step_id: step_id,
+                        wp_sequence: way_points[wp].wp_sequence,
+                        name: way_points[wp].name,
+                        description: way_points[wp].description,
+                        instruction: way_points[wp].instruction,
+                        type: way_points[wp].type,
+                        kind: way_points[wp].kind,
+                        link: way_points[wp].link,
+                        dd_coord: {
+                            "longitude": way_points[wp].dd_coord.longitude,
+                            "latitude": way_points[wp].dd_coord.latitude,
+                            "address": {
+                                "full_text": way_points[wp].dd_coord.address,
+                                "country": ""
+                            },
+                        }
                     }
-                    console.log(`key: "dd_coord.longitude", value: "${way_points[wp].dd_coord.longitude}"`);
-                    console.log(`key: "dd_coord.latitude", value: "${way_points[wp].dd_coord.latitude}"`);
-                    result = Joi.validate(way_points[wp].dd_coord, joi_schema_coord);
-                    if (result.error !== null) {
-                        console.log("Joi error (WP/COORD) =>", result.error);
-                        return;
-                    }
-                    result = Joi.validate(way_points[wp].dd_coord, joi_schema_coord);
-                    if (result.error !== null) {
-                        console.log("Joi error (WP/COORD) =>", result.error);
-                        return;
-                    }
+                    console.log(newWP);
+                    // result = Joi.validate(newPoi, joi_schema_poi);
+                    // if (result.error !== null) {
+                    //     console.log("Joi error (NEW POI) =>", result.error);
+                    //     return;
+                    // }
+
+                    // Create WP instance in db
+                    // Invoke REST API route
+                    url = `${C_HOST_URL}/wp/create`;
+                    response = await fetch(url, {
+                        json: true,
+                        method: 'POST',
+                        // this line is important, if this content-type is not set it wont work
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(newWP)
+                    });
+
+                    // Get back wp_id of WAY_POINT just created
+                    json = await response.json();
+                    status = await response.status;
+                    // console.log(">>>>>>>>>>>>>>>>", json, status)
+
+                    wp_id = json.wp._id
+                    if ( json.result ) {
+                        console.log(`wp_id (${wp_id}) has been created...`, json);
+                    } else {
+                        console.log(`An error occured on WP creation...`, json);
+                        //return;
+                    } 
+                    // ==== WP ADD (END)=======================================================
+
+                    // for (const myKey in way_points[wp]) {
+                    //     console.log(`key: "${myKey}", value: "${way_points[wp][myKey]}", typeof: "${typeof(way_points[wp][myKey])}"`);
+                    // }
+                    // console.log(`key: "dd_coord.longitude", value: "${way_points[wp].dd_coord.longitude}"`);
+                    // console.log(`key: "dd_coord.latitude", value: "${way_points[wp].dd_coord.latitude}"`);
+                    // result = Joi.validate(way_points[wp].dd_coord, joi_schema_coord);
+                    // if (result.error !== null) {
+                    //     console.log("Joi error (WP/COORD) =>", result.error);
+                    //     return;
+                    // }
+                    // result = Joi.validate(way_points[wp].dd_coord, joi_schema_coord);
+                    // if (result.error !== null) {
+                    //     console.log("Joi error (WP/COORD) =>", result.error);
+                    //     return;
+                    // }
                     console.log("\n");
 
                 }

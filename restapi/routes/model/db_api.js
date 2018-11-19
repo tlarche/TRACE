@@ -14,7 +14,17 @@ try {
     // Trace the route
     console.log("ROUTE: db/remove-all-collections", req.query);
 
-    // Remove POIS collection
+    // Remove WAY_POINTS collection
+    mongoose.connection.db.dropCollection("way_points", function (err, result) {
+    console.log(result)
+    if (err) {
+        console.log("error deleting collection [way_points]");
+    } else {
+        console.log("deleting collection [way_points] success");
+    }
+    });
+
+    // Remove POIs collection
     mongoose.connection.db.dropCollection("pois", function (err, result) {
     console.log(result)
     if (err) {
@@ -24,7 +34,7 @@ try {
     }
     });
 
-    // Remove STEPS collection
+    // Remove STEPs collection
     mongoose.connection.db.dropCollection("steps", function (err, result) {
     console.log(result)
     if (err) {
@@ -34,7 +44,7 @@ try {
     }
     });
 
-    // Remove TRIPS collection
+    // Remove TRIPs collection
     mongoose.connection.db.dropCollection("trips", function (err, result) {
     console.log(result)
     if (err) {
@@ -44,7 +54,7 @@ try {
     }
     });
 
-    // Remove USERS collection
+    // Remove USERs collection
     mongoose.connection.db.dropCollection("users", function (err, result) {
     console.log(result)
     if (err) {

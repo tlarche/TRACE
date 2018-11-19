@@ -10,7 +10,6 @@ const tripSchema = mongoose.Schema({
         type: ObjectId,
         require: true
     },
-    // user_id: ObjectId,
     trip_sequence: Number,
     status: String,
     title: {type: String, unique: true},
