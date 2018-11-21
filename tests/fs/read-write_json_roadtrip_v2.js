@@ -511,13 +511,13 @@ const main = async () => {
 
                 return json._id
 
-            } catch (error) {
-                console.log(error);
-            }
-        };
+    } catch (error) {
+        console.log(error);
+    }
+};
 
 main()
     .then(
-        (data) => console.log("=>", data)  
+        (data) => console.log("Fin main() =>", data)  
         //console.log(">>>", user_id);
     )
